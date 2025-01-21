@@ -44,6 +44,14 @@ export const buildInitialFormState = (fields: FormFieldBlock[]) => {
         [field.name]: '',
       }
     }
+    // @ts-ignore
+    if (field.blockType === 'number') {
+      return {
+        ...initialSchema,
+        // @ts-ignore
+        [field.name]: '',
+      }
+    }
     throw new Error(`Invalid block type: ${field.blockType}`)
   }, {})
 }
