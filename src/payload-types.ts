@@ -93,6 +93,7 @@ export interface UserAuthOperations {
  */
 export interface Page {
   id: number;
+  tenant?: (number | null) | Tenant;
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -149,10 +150,31 @@ export interface Page {
   publishedAt?: string | null;
   slug?: string | null;
   slugLock?: boolean | null;
-  tenant?: (number | null) | Tenant;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: number;
+  name: string;
+  /**
+   * Used for domain-based tenant handling
+   */
+  domain?: string | null;
+  /**
+   * Used for url paths, example: /tenant-slug/page-slug
+   */
+  slug: string;
+  /**
+   * If checked, logging in is not required to read. Useful for building public pages.
+   */
+  allowPublicRead?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -320,10 +342,12 @@ export interface Category {
  */
 export interface User {
   id: number;
-  name?: string | null;
+  roles?: ('super-admin' | 'user')[] | null;
+  username?: string | null;
   tenants?:
     | {
         tenant: number | Tenant;
+        roles: ('tenant-admin' | 'tenant-viewer')[];
         id?: string | null;
       }[]
     | null;
@@ -337,17 +361,6 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants".
- */
-export interface Tenant {
-  id: number;
-  name: string;
-  domain: string;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -953,6 +966,7 @@ export interface PayloadMigration {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   hero?:
     | T
@@ -995,7 +1009,6 @@ export interface PagesSelect<T extends boolean = true> {
   publishedAt?: T;
   slug?: T;
   slugLock?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1233,11 +1246,13 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  name?: T;
+  roles?: T;
+  username?: T;
   tenants?:
     | T
     | {
         tenant?: T;
+        roles?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -1257,6 +1272,8 @@ export interface UsersSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   domain?: T;
+  slug?: T;
+  allowPublicRead?: T;
   updatedAt?: T;
   createdAt?: T;
 }

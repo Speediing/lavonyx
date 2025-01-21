@@ -20,14 +20,15 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
+import { superAdminOrTeanantAdminAccess } from './access/superAdminOrTenantAdmin'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
+    create: superAdminOrTeanantAdminAccess,
+    delete: superAdminOrTeanantAdminAccess,
+    read: () => true,
+    update: superAdminOrTeanantAdminAccess,
   },
   // This config controls what's populated by default when a page is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property

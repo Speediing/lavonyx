@@ -13,7 +13,9 @@ import { beforeSyncWithSearch } from '@/search/beforeSync'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
-
+import { getUserTenantIDs } from '@/utilities/getUserTenantIDs'
+import { isSuperAdmin } from '@/access/isSuperAdmin'
+import type { Config } from '../payload-types'
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
@@ -90,17 +92,25 @@ export const plugins: Plugin[] = [
       },
     },
   }),
-  multiTenantPlugin({
+  multiTenantPlugin<Config>({
     collections: {
       pages: {},
-      navigation: {
-        isGlobal: true,
+    },
+    tenantField: {
+      access: {
+        read: () => true,
+        update: ({ req }) => {
+          if (isSuperAdmin(req.user)) {
+            return true
+          }
+          return getUserTenantIDs(req.user).length > 0
+        },
       },
     },
-    documentTenantField: {
-      name: 'tenant',
-      access: {},
+    tenantsArrayField: {
+      includeDefaultField: false,
     },
+    userHasAccessToAllTenants: (user) => isSuperAdmin(user),
   }),
   payloadCloudPlugin(),
 ]
