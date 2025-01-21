@@ -22,7 +22,7 @@ export const externalUsersLogin: Endpoint = {
       throw new APIError('Username and Password are required for login.', 400, null, true)
     }
 
-    const fullTenant = (
+    const fullTenant: any = (
       await req.payload.find({
         collection: 'tenants',
         where: tenantDomain
@@ -39,7 +39,7 @@ export const externalUsersLogin: Endpoint = {
       })
     ).docs[0]
 
-    const foundUser = await req.payload.find({
+    const foundUser: any = await req.payload.find({
       collection: 'users',
       where: {
         or: [
@@ -87,7 +87,7 @@ export const externalUsersLogin: Endpoint = {
         })
 
         if (loginAttempt?.token) {
-          const collection: Collection = (req.payload.collections as { [key: string]: Collection })[
+          const collection: any = (req.payload.collections as { [key: string]: Collection })[
             'users'
           ]
           const cookie = generatePayloadCookie({
