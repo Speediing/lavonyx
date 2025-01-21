@@ -315,25 +315,42 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding pages...`)
 
+  // Create a default tenant if it doesn't exist
+  const tenant = await payload.create({
+    collection: 'tenants',
+    data: {
+      name: 'Default Tenant',
+      slug: 'default',
+      domain: 'localhost',
+      allowPublicRead: true,
+    },
+  })
+
   const [_, contactPage] = await Promise.all([
     payload.create({
       collection: 'pages',
       depth: 0,
-      data: JSON.parse(
-        JSON.stringify(home)
-          .replace(/"\{\{IMAGE_1\}\}"/g, String(imageHomeID))
-          .replace(/"\{\{IMAGE_2\}\}"/g, String(image2ID)),
-      ),
+      data: {
+        ...JSON.parse(
+          JSON.stringify(home)
+            .replace(/"\{\{IMAGE_1\}\}"/g, String(imageHomeID))
+            .replace(/"\{\{IMAGE_2\}\}"/g, String(image2ID)),
+        ),
+        tenant: tenant.id,
+      },
     }),
     payload.create({
       collection: 'pages',
       depth: 0,
-      data: JSON.parse(
-        JSON.stringify(contactPageData).replace(
-          /"\{\{CONTACT_FORM_ID\}\}"/g,
-          String(contactFormID),
+      data: {
+        ...JSON.parse(
+          JSON.stringify(contactPageData).replace(
+            /"\{\{CONTACT_FORM_ID\}\}"/g,
+            String(contactFormID),
+          ),
         ),
-      ),
+        tenant: tenant.id,
+      },
     }),
   ])
 

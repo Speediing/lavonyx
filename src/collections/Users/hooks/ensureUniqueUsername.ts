@@ -6,14 +6,19 @@ import { getUserTenantIDs } from '../../../utilities/getUserTenantIDs'
 
 export const ensureUniqueUsername: FieldHook = async ({ data, originalDoc, req, value }) => {
   // if value is unchanged, skip validation
-  if (originalDoc.username === value) {
+  if (originalDoc?.username === value) {
     return value
   }
 
   const incomingTenantID = typeof data?.tenant === 'object' ? data.tenant.id : data?.tenant
   const currentTenantID =
-    typeof originalDoc?.tenant === 'object' ? originalDoc.tenant.id : originalDoc?.tenant
+    typeof originalDoc?.tenant === 'object' ? originalDoc?.tenant.id : originalDoc?.tenant
   const tenantIDToMatch = incomingTenantID || currentTenantID
+
+  // If no tenant is specified during creation, return value without validation
+  if (!tenantIDToMatch) {
+    return value
+  }
 
   const findDuplicateUsers = await req.payload.find({
     collection: 'users',
