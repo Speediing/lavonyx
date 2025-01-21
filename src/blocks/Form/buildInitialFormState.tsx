@@ -38,6 +38,12 @@ export const buildInitialFormState = (fields: FormFieldBlock[]) => {
         [field.name]: '',
       }
     }
-    throw new Error('invalid blocktype')
+    if (field.blockType === 'textarea') {
+      return {
+        ...initialSchema,
+        [field.name]: '',
+      }
+    }
+    throw new Error(`Invalid block type: ${field.blockType}`)
   }, {})
 }
