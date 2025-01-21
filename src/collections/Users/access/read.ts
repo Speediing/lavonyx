@@ -18,7 +18,7 @@ export const readAccess: Access<User> = ({ req, id }) => {
 
   const cookies = parseCookies(req.headers)
   const superAdmin = isSuperAdmin(req.user)
-  const selectedTenant = cookies.get('payload-tenant')
+  const selectedTenant: any = cookies.get('payload-tenant')
   const adminTenantAccessIDs = getUserTenantIDs(req.user, 'tenant-admin')
 
   if (selectedTenant) {
