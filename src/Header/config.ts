@@ -1,9 +1,9 @@
-import type { GlobalConfig } from 'payload'
+import type { CollectionConfig, GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
 import { revalidateHeader } from './hooks/revalidateHeader'
 
-export const Header: GlobalConfig = {
+export const Header: CollectionConfig = {
   slug: 'header',
   access: {
     read: () => true,
@@ -26,7 +26,7 @@ export const Header: GlobalConfig = {
       },
     },
   ],
-  hooks: {
-    afterChange: [revalidateHeader],
-  },
+  // hooks: {
+  //   afterChange: [revalidateHeader],
+  // },
 }

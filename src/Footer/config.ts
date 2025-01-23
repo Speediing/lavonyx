@@ -1,9 +1,9 @@
-import type { GlobalConfig } from 'payload'
+import type { CollectionConfig, GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
 
-export const Footer: GlobalConfig = {
+export const Footer: CollectionConfig = {
   slug: 'footer',
   access: {
     read: () => true,
@@ -26,7 +26,7 @@ export const Footer: GlobalConfig = {
       },
     },
   ],
-  hooks: {
-    afterChange: [revalidateFooter],
-  },
+  // hooks: {
+  //   afterChange: [revalidateFooter],
+  // },
 }

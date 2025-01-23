@@ -1,4 +1,3 @@
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
@@ -16,6 +15,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 import { getUserTenantIDs } from '@/utilities/getUserTenantIDs'
 import { isSuperAdmin } from '@/access/isSuperAdmin'
 import type { Config } from '../payload-types'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
@@ -95,7 +95,11 @@ export const plugins: Plugin[] = [
   multiTenantPlugin<Config>({
     collections: {
       pages: {},
+      header: { isGlobal: true },
+      footer: { isGlobal: true },
     },
+    debug: true,
+    enabled: true,
     tenantField: {
       access: {
         read: () => true,
@@ -112,5 +116,11 @@ export const plugins: Plugin[] = [
     },
     userHasAccessToAllTenants: (user) => isSuperAdmin(user),
   }),
-  payloadCloudPlugin(),
+  vercelBlobStorage({
+    enabled: true,
+    collections: {
+      media: true,
+    },
+    token: process.env.BLOB_READ_WRITE_TOKEN,
+  }),
 ]
